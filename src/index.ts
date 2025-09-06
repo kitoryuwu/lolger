@@ -10,7 +10,7 @@ enum LogLevel {
 	LOG = 1,
 	INFO = 2,
 	WARN = 3,
-	ERROR = 4
+	ERROR = 4,
 }
 
 type LogLevelName = keyof typeof LogLevel;
@@ -28,7 +28,7 @@ class Logger {
 		"#A16AD4",
 		"#6AD49F",
 		"#D46A94",
-		"#6AABD4"
+		"#6AABD4",
 	];
 
 	private static levelChalk: Record<LogLevelName, ChalkType> = {
@@ -36,7 +36,7 @@ class Logger {
 		LOG: chalk.cyan.bold,
 		INFO: chalk.blue.bold,
 		WARN: chalk.yellow.bold,
-		ERROR: chalk.red.bold
+		ERROR: chalk.red.bold,
 	};
 
 	private namespace: string;
@@ -44,7 +44,10 @@ class Logger {
 
 	constructor(namespace: string) {
 		this.namespace = namespace;
-		const hash = Array.from(this.namespace).reduce((h, c) => h + c.charCodeAt(0), 0);
+		const hash = Array.from(this.namespace).reduce(
+			(h, c) => h + c.charCodeAt(0),
+			0,
+		);
 		const idx = hash % Logger.namespaceColors.length;
 		this.nsChalk = chalk.hex(Logger.namespaceColors[idx]);
 	}
@@ -62,14 +65,16 @@ class Logger {
 	private msgToString(msg: unknown): string {
 		if (typeof msg === "string") {
 			return msg;
-		}
-		else if (msg instanceof Error) {
-			return msg.stack ?? `${msg.name}: ${msg.message}`;
-		}
-		else if (msg instanceof Function) {
+		} else if (msg instanceof Error) {
+			return (
+				msg.stack
+					?.split("\n")
+					.map((l) => (l.startsWith("    ") ? l.slice(2) : l))
+					.join("\n") ?? `${msg.name}: ${msg.message}`
+			);
+		} else if (msg instanceof Function) {
 			return "function()";
-		}
-		else {
+		} else {
 			return stringify(msg, null, 2);
 		}
 	}
@@ -113,5 +118,4 @@ function setLogLevel(level: LogLevel) {
 	Logger.level = level;
 }
 
-export type { LogLevel };
-export { Logger, getLogger, setLogLevel };
+export { Logger, LogLevel, getLogger, setLogLevel };
