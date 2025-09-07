@@ -41,7 +41,7 @@ What it looks like in a terminal:
 - `logger.debug/log/info/warn/error(...msgs: unknown[]): void;` — log messages. Accepts any number of arguments.
 
 ## Contributing
-If you have any suggestions, please open an [issue](https://github.com/kitoryuwu/lolger/issues) or a [pull request](https://github.com/kitoryuwu/lolger/pulls). Thanks!
+If you have any suggestions, please open an [issue](https://github.com/notKitory/lolger/issues) or a [pull request](https://github.com/notKitory/lolger/pulls). Thanks!
 
 ## License
 Apache License 2.0. See LICENSE for full license text.

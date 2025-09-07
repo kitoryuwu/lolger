@@ -1,6 +1,6 @@
 {
 	"name": "lolger",
-	"version": "1.1.0",
+	"version": "1.1.1",
 	"description": "Yet another beautiful (useless) logger",
 	"keywords": [
 		"logger",
@@ -14,12 +14,12 @@
 	"author": "Dmitry Koteykin",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/kitoryuwu/lolger.git"
+		"url": "git+https://github.com/notKitory/lolger.git"
 	},
 	"bugs": {
-		"url": "https://github.com/kitoryuwu/lolger/issues"
+		"url": "https://github.com/notKitory/lolger/issues"
 	},
-	"homepage": "https://github.com/kitoryuwu/lolger#readme",
+	"homepage": "https://github.com/notKitory/lolger#readme",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
