@@ -20,13 +20,11 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - run: echo "previous_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo '')" >> $GITHUB_ENV
-
       - name: Create Tag
         id: create_tag
         uses: jaywcjlove/create-tag-action@main
         with:
-          package-path: ./package.json  # Путь к package.json
+          package-path: ./package.json
 
       - name: Publish to npm (with provenance)
         if: steps.create_tag.outputs.successful == 'true'
@@ -38,10 +36,35 @@ jobs:
         if: steps.create_tag.outputs.successful == 'true'
         run: echo "TGZ=$(npm pack --silent)" >> "$GITHUB_OUTPUT"
 
+      - name: Generate Release Notes
+        id: generate_notes
+        if: steps.create_tag.outputs.successful == 'true'
+        run: |
+          tag_name="${{ steps.create_tag.outputs.version }}"
+          version="${tag_name#v}"  # Убираем 'v' для body, если нужно
+          
+          response=$(curl -s -w "%{http_code}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -X POST https://api.github.com/repos/${{ github.repository }}/releases/generate-notes \
+            -d '{"tag_name":"'$tag_name'","target_commitish":"main"}')
+          
+          status="${response: -3}"
+          body="${response::-3}"
+          
+          if [ "$status" -eq 200 ]; then
+            notes=$(echo "$body" | jq -r .body)
+          else
+            notes="Initial release v$version"
+          fi
+          
+          echo "release_body=$notes" >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub Release
         if: steps.create_tag.outputs.successful == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.create_tag.outputs.version }}  # Используем версию из созданного тега (например, v1.0.0)
+          tag_name: ${{ steps.create_tag.outputs.version }}
           files: ${{ steps.pack.outputs.TGZ }}
-          generate_release_notes: true
+          generate_release_notes: false  # Отключаем встроенную генерацию
+          body: ${{ steps.generate_notes.outputs.release_body }}
